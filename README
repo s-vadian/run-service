@@ -1,0 +1,46 @@
+RunServicePHP v.1.0
+
+Requirements:
+-php 7.2.5
+-pthreat 3
+-posix
+
+Тесты:
+Разгрузка очереди в 10 000 записей
+// Время выполнения итерации: 60.2312 сек. - 4 потока
+// Время выполнения итерации: 60.7143 сек. - 4 потока
+// Время выполнения итерации: 113.781 сек. - 1 поток
+// Время выполнения итерации: 114.2963 сек. - 1 поток
+
+
+Конфигурация:
+return [
+    'db' => [
+        'driver' => 'pgsql',
+        'dbname' => 'test_app',
+        'host' => 'localhost',
+        'port' => '5432',
+        'user' => 'postgres',
+        'password' => 'postgres',
+    ],
+    'query_ids' => 'SELECT id_service, id FROM "queue" WHERE id_service = ${SERVICE_ID} AND (status IN (0,-1,-2)) ORDER BY id LIMIT 50000;',
+    'pidfile' => '/tmp/run-service-daemon.pid',
+    'logfile' => '/var/log/run-service-php/run-service.log',
+    'interval' => 10,
+    'threads_cnt' => 4,
+    'tools' => [
+        'php' => [
+            'path' => '/usr/bin/php',
+        ],
+    ],
+    'services' => [
+        'service1' => [
+            'id' => 1,
+            'min_ids' => 1,
+            'max_ids' => 50,
+            'tool' => 'php',
+            'threads_cnt' => 4,
+            'path' => '/test_projects/run-service/Tests/Services/service1/',
+        ],
+    ],
+];
